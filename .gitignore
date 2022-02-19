@@ -152,5 +152,3 @@ cython_debug/
 
 # others
 .DS_Store
-
-data

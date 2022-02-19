@@ -6,8 +6,8 @@ Monorepo for all backend microservices.
 
 Refer to each component's section for detailed startup instructions for local development.
 
-1. [API Server](##api-server) - Microservice that provides APIs for [watersense-ui](https://github.com/seanjin97/watersense-ui). 
-2. [Ingestion Module](##ingestion-module) - Microservice that saves incoming message stream from RabbitMQ broker from sensor origin. 
+1. [API Server](#api-server) - Microservice that provides APIs for [watersense-ui](https://github.com/seanjin97/watersense-ui). 
+2. [Ingestion Module](#ingestion-module) - Microservice that saves incoming message stream from RabbitMQ broker from sensor origin. 
 3. [MongoDB](./mongodb) - NoSQL DB to store data streamed from sensor. This folder serves as a docker volume to persist data on the local container instance. Delete the data folder to reset all data. 
 4. [RabbitMQ](./rabbitmq) - Messaging broker. This folder serves as a docker volume to persist data on the local container instance. Delete the data folder to reset all data.
 
@@ -25,10 +25,12 @@ This runs all components as docker containers.
 8. Run the sample producer that simulates data being streamed from the sensor. `$ python src/amqp_sample_producer.py`
 ![sample producer](./assets/SampleProducer.png) 
 Ingestion module will stop crashing and you should see this. ![docker compose result](./assets/DockerComposeSuccess.png)
-9. Go to the RabbitMQ console to verify that RabbitMQ is working. http://localhost:15672. `Username: root, Password: root`
+9. Go to the RabbitMQ console to verify that RabbitMQ is working. http://localhost:15672. 
+`Username: root, Password: root`
 ![rabbitmq exchanges](./assets/RabbitMQExchanges.png)
 ![rabbitmq queues](./assets/RabbitMQQueues.png)
-10. Go to the MongoDB admin console to verify that MongoDB is working. http://localhost:8081. `Username: root, Password: root`
+10. Go to the MongoDB admin console to verify that MongoDB is working. http://localhost:8081. 
+`Username: root, Password: root`
 ![mongodb admin console](./assets/MongoDB.png)
 11. Go to the api-server swagger docs to test available apis. http://localhost:8080/swagger. ![swagger](./assets/Swagger.png)
 
@@ -42,12 +44,12 @@ Running api-server locally.
 
 #### Via docker (If you prefer to develop while the code is running in the docker container)
 
-1. Start watersense-backend. [Refer to steps above](##Running-watersense-backend-locally).
+1. Start watersense-backend. [Refer to steps above](#running-watersense-backend-locally).
 2. Modify source code, the docker container will hot reload on code change. # Note: if new env variables or dependencies are added, the docker image will need to be rebuilt. Stop the docker compose, then `$ docker compose -f development down`, followed by deleting the `watersense-backend_api` image. Finally, re-run the docker compose.
 
 #### Via source code (If you prefer to develop and run the code directly.)
 
-1. Start watersense-backend. [Refer to steps above](##Running-watersense-backend-locally)
+1. Start watersense-backend. [Refer to steps above](#running-watersense-backend-locally)
 2. Stop the `watersense-backend-api-1` container since you'll be running the server on command line.
 2. `$ cd api-server`
 3. `$ poetry install`
@@ -79,7 +81,7 @@ Running ingestion-module locally.
 
 #### Via source code
 
-1. Start watersense-backend. [Refer to steps above](##Running-watersense-backend-locally)
+1. Start watersense-backend. [Refer to steps above](#running-watersense-backend-locally)
 2. Stop the `watersense-backend-ingestion-module-1` container since you'll be running the server on command line.
 2. `$ cd ingestion-module`
 3. `$ poetry install`
