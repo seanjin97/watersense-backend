@@ -1,0 +1,68 @@
+version: "3.9"
+services:
+  api:
+    build:
+      context: ./api-server
+      dockerfile: Dockerfile_dev
+    ports:
+      - "8080:8080"
+    volumes:
+      - ././api-server/src:/opt/app/src
+    entrypoint: ["poetry", "run", "python", "-u", "main.py"]
+    depends_on:
+      - db-admin
+    environment:
+      MONGO_URI: mongodb://root:root@host.docker.internal:27017
+  db:
+    image: mongo
+    restart: always
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+    volumes:
+      - ./mongodb/data/db:/data/db
+  db-admin:
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: root
+      ME_CONFIG_MONGODB_URL: mongodb://root:root@db:27017/
+    logging:
+      driver: none
+    depends_on:
+     - db
+  rabbitmq:
+    image: rabbitmq:3-management
+    hostname: rabbitmq
+    ports:
+      - 5672:5672
+      - 15672:15672
+      - 1883:1883
+    environment:
+      RABBITMQ_DEFAULT_USER: root
+      RABBITMQ_DEFAULT_PASS: root
+    volumes:
+      - ./rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins
+      - ./rabbitmq/data:/var/lib/rabbitmq
+  ingestion-module:
+    build:
+      context: ./ingestion-module
+      dockerfile: Dockerfile_dev
+    environment:
+      RABBITMQ_HOST: host.docker.internal
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USER: root
+      RABBITMQ_PW: root
+      RABBITMQ_INGESTION_EXCHANGE: watersense.data
+      RABBITMQ_INGESTION_QUEUE: watersense.ingestion
+      RABBITMQ_INGESTION_KEY: sensor.data
+      MONGO_URI: mongodb://root:root@host.docker.internal:27017
+    entrypoint: ["poetry", "run", "python", "-u", "main.py"]
+    depends_on:
+      - rabbitmq
+    restart: unless-stopped

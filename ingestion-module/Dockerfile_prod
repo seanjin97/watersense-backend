@@ -1,0 +1,19 @@
+FROM python:3.10-slim
+
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt update -y && apt install libpq-dev -y
+
+WORKDIR /opt/app
+
+ENV POETRY_VERSION=1.1.13
+RUN pip install "poetry==$POETRY_VERSION"
+COPY poetry.lock pyproject.toml ./
+COPY src src
+
+RUN poetry build
+RUN cd dist
+RUN pip install .
+
+EXPOSE 8080
+WORKDIR /opt/app/src
+ENTRYPOINT poetry run python main.py
