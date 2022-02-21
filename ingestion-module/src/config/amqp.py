@@ -1,17 +1,8 @@
 import pika
 import config.config as config
 
-hostname = config.RABBITMQ_HOST
-port = int(config.RABBITMQ_PORT)
-
-credentials = pika.PlainCredentials(config.RABBITMQ_USER, config.RABBITMQ_PW)
-
 connection = pika.BlockingConnection(
-    pika.ConnectionParameters(
-        host=hostname, port=port,
-        heartbeat=3600, blocked_connection_timeout=3600,
-        credentials=credentials
-    )
+    pika.URLParameters(config.RABBITMQ_URI)
 )
 
 channel = connection.channel()

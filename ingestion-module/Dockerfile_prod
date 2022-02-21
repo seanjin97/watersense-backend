@@ -1,6 +1,7 @@
 FROM python:3.10-slim
 
 ENV DEBIAN_FRONTEND=noninteractive
+ENV ENV=prod
 RUN apt update -y && apt install libpq-dev -y
 
 WORKDIR /opt/app
@@ -16,4 +17,4 @@ RUN pip install .
 
 EXPOSE 8080
 WORKDIR /opt/app/src
-ENTRYPOINT poetry run python main.py
+ENTRYPOINT python3 -u main.py

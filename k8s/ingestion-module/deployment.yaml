@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: watersense-ingestion
+  namespace: watersense-seanjin97
+spec:
+  selector:
+    matchLabels:
+      app: watersense-ingestion
+  template:
+    metadata:
+      labels:
+        app: watersense-ingestion
+    spec:
+      containers:
+      - name: watersense-api
+        image: ghcr.io/seanjin97/watersense-ingestion:latest
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 8080
+        env:
+          - name: MONGO_URI
+            valueFrom:
+              secretKeyRef:
+                name: watersense-ingestion-secrets
+                key: MONGO_URI
+          - name: RABBITMQ_URI
+            valueFrom:
+              secretKeyRef:
+                name: watersense-ingestion-secrets
+                key: RABBITMQ_URI
+          - name: RABBITMQ_INGESTION_EXCHANGE
+            valueFrom:
+              secretKeyRef:
+                name: watersense-ingestion-secrets
+                key: RABBITMQ_INGESTION_EXCHANGE
+          - name: RABBITMQ_INGESTION_QUEUE
+            valueFrom:
+              secretKeyRef:
+                name: watersense-ingestion-secrets
+                key: RABBITMQ_INGESTION_QUEUE
+          - name: RABBITMQ_INGESTION_KEY
+            valueFrom:
+              secretKeyRef:
+                name: watersense-ingestion-secrets
+                key: RABBITMQ_INGESTION_KEY
+      imagePullSecrets:
+        - name: ghcr-registry-key

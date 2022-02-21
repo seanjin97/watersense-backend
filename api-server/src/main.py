@@ -22,6 +22,7 @@ async def root():
 
 @app.get("/getall")
 async def root():
+    print("/getall: triggered")
     data = sensor_db.get_all()
     return JSONResponse(status_code=200, content=data)
 

@@ -154,3 +154,6 @@ cython_debug/
 .DS_Store
 TOKEN.txt
 secret.yaml
+.dockerconfigjson
+dockerconfigjson.yaml
+.env.prod

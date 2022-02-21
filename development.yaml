@@ -8,11 +8,12 @@ services:
       - "8080:8080"
     volumes:
       - ././api-server/src:/opt/app/src
-    entrypoint: ["poetry", "run", "python", "-u", "main.py"]
+    entrypoint: ["poetry", "run", "python3", "-u", "main.py"]
     depends_on:
       - db-admin
     environment:
       MONGO_URI: mongodb://root:root@host.docker.internal:27017
+      ENV: dev
   db:
     image: mongo
     restart: always
@@ -54,15 +55,13 @@ services:
       context: ./ingestion-module
       dockerfile: Dockerfile_dev
     environment:
-      RABBITMQ_HOST: host.docker.internal
-      RABBITMQ_PORT: 5672
-      RABBITMQ_USER: root
-      RABBITMQ_PW: root
+      RABBITMQ_URI: amqp://root:root@host.docker.internal:5672/%2F
       RABBITMQ_INGESTION_EXCHANGE: watersense.data
       RABBITMQ_INGESTION_QUEUE: watersense.ingestion
       RABBITMQ_INGESTION_KEY: sensor.data
       MONGO_URI: mongodb://root:root@host.docker.internal:27017
-    entrypoint: ["poetry", "run", "python", "-u", "main.py"]
+      ENV: dev
+    entrypoint: ["poetry", "run", "python3", "-u", "main.py"]
     depends_on:
       - rabbitmq
     restart: unless-stopped

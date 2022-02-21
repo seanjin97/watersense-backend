@@ -1,6 +1,7 @@
 FROM python:3.10-slim
 
 ENV DEBIAN_FRONTEND=noninteractive
+ENV ENV=prod
 RUN apt update -y && apt install libpq-dev -y
 
 WORKDIR /opt/app
@@ -17,4 +18,5 @@ RUN pip install .
 
 EXPOSE 8080
 WORKDIR /opt/app/src
-ENTRYPOINT uvicorn main:app --port 8080 --host 0.0.0.0
+# ENTRYPOINT uvicorn main:app --port 8080 --host 0.0.0.0
+ENTRYPOINT python3 -u main.py

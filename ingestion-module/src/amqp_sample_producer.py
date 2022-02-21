@@ -2,17 +2,15 @@ import pika
 import time 
 import random
 import json 
+from dotenv import load_dotenv
+import os
+load_dotenv()
+RABBITMQ_URI=os.environ["RABBITMQ_URI"]
 
 # Create connection
-hostname = "localhost"
-port = 5672
-credentials = pika.PlainCredentials('root', 'root')
-
 connection = pika.BlockingConnection(
-    pika.ConnectionParameters(
-        host=hostname, port=port,
-        heartbeat=3600, blocked_connection_timeout=3600,
-        credentials=credentials))
+    pika.URLParameters(RABBITMQ_URI)
+)
 
 channel = connection.channel()
 channel.exchange_declare(exchange='watersense.data',

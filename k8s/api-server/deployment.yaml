@@ -27,3 +27,5 @@ spec:
               secretKeyRef:
                 name: watersense-api-secrets
                 key: MONGO_URI
+      imagePullSecrets:
+        - name: ghcr-registry-key

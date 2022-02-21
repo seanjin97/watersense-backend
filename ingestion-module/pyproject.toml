@@ -9,6 +9,8 @@ python = "^3.10"
 pika = "^1.2.0"
 python-dotenv = "^0.19.2"
 pymongo = "^4.0.1"
+dnspython = "^2.2.0"
+certifi = "^2021.10.8"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
