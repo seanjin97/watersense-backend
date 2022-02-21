@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: watersense-api
+  namespace: watersense-seanjin97
+  annotations:
+    dev.okteto.com/auto-ingress: "true"
+spec:
+  selector:
+    app: watersense-api
+  type: ClusterIP
+  ports:
+  - port: 8080
+    targetPort: 8080
+    protocol: TCP

@@ -38,6 +38,7 @@ Ingestion module will stop crashing and you should see this. ![docker compose re
 
 ## API Server 
 
+Deployed server at https://watersense-api-watersense-seanjin97.cloud.okteto.net/swagger
 ### How to run
 
 Running api-server locally.

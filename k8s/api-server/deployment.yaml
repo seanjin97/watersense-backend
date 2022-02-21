@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: watersense-api
+  namespace: watersense-seanjin97
+spec:
+  selector:
+    matchLabels:
+      app: watersense-api
+  template:
+    metadata:
+      labels:
+        app: watersense-api
+    spec:
+      containers:
+      - name: watersense-api
+        image: ghcr.io/seanjin97/watersense-api:latest
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 8080
+        env:
+          - name: MONGO_URI
+            valueFrom:
+              secretKeyRef:
+                name: watersense-api-secrets
+                key: MONGO_URI
