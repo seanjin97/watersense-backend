@@ -174,8 +174,8 @@ python-versions = "*"
 
 [metadata]
 lock-version = "1.1"
-python-versions = "^3.10"
-content-hash = "8da3e270dd6ae3ed32a1c7d66ad62da6a135c5600964d4677f100ba4f9300cb5"
+python-versions = "^3.8"
+content-hash = "0c1c6659dedaf0bc23fb077b7cf0a86186daa34421659df7bb10bbcfe9ea9dfc"
 
 [metadata.files]
 atomicwrites = [
