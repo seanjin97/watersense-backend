@@ -22,7 +22,7 @@ This runs all components as docker containers.
 5. Open a new terminal and navigate to the ingestion-module. `$ cd ingestion-module`
 6. Install the ingestion-module dependencies. `$ poetry install`
 7. Activate the virtual env. `$ poetry shell`
-8. Run the sample producer that simulates data being streamed from the sensor. `$ python src/amqp_sample_producer.py`
+8. Run the sample producer that simulates data being streamed from the sensor. `$ python src/mock_sensor.py`
 ![sample producer](./assets/SampleProducer.png) 
 Ingestion module will stop crashing and you should see this. ![docker compose result](./assets/DockerComposeSuccess.png)
 9. Go to the RabbitMQ console to verify that RabbitMQ is working. http://localhost:15672. 

@@ -6,7 +6,7 @@ connection = pika.BlockingConnection(
 )
 
 channel = connection.channel()
-channel.basic_qos(prefetch_count=1)
+# channel.basic_qos(prefetch_count=1)
 
 queue_declare = channel.queue_declare(queue=config.RABBITMQ_INGESTION_QUEUE)
 

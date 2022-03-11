@@ -2,7 +2,7 @@ import config.amqp as amqp
 import json
 import config.config as config
 import dao.sensor as sensor_db
-
+import datetime
 # Message consumer thread
 def receive_messages():
     amqp.channel.basic_consume(queue=config.RABBITMQ_INGESTION_QUEUE, on_message_callback=callback, auto_ack=True)
@@ -15,7 +15,10 @@ def receive_messages():
 # Callback function that processes incoming messages
 def callback(channel, method, properties, body):
     print("Message received:", json.loads(body))
-    sensor_db.insert(json.loads(body))
+    message = json.loads(body)
+    message["startTime"] = datetime.datetime.fromtimestamp(message["startTime"])
+    
+    sensor_db.insert(message)
     print() 
 
 if __name__ == "__main__":

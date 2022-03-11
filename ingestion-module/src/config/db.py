@@ -8,4 +8,7 @@ else:
     client = MongoClient(config.MONGO_URI)
 
 db = client.watersense
+
+if 'sensor' not in db.list_collection_names():
+    db.create_collection('sensor',timeseries={'timeField':'startTime', 'granularity': 'seconds'})
 sensor = db.sensor

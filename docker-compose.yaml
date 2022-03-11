@@ -12,7 +12,7 @@ services:
     depends_on:
       - db-admin
     environment:
-      MONGO_URI: mongodb://root:root@host.docker.internal:27017
+      MONGO_URI: mongodb://root:root@db:27017
       ENV: dev
   db:
     image: mongo
@@ -55,11 +55,11 @@ services:
       context: ./ingestion-module
       dockerfile: Dockerfile_dev
     environment:
-      RABBITMQ_URI: amqp://root:root@host.docker.internal:5672/%2F
-      RABBITMQ_INGESTION_EXCHANGE: watersense.data
+      RABBITMQ_URI: amqp://root:root@rabbitmq:5672/%2F
+      RABBITMQ_INGESTION_EXCHANGE: amq.topic
       RABBITMQ_INGESTION_QUEUE: watersense.ingestion
-      RABBITMQ_INGESTION_KEY: sensor.data
-      MONGO_URI: mongodb://root:root@host.docker.internal:27017
+      RABBITMQ_INGESTION_KEY: watersense
+      MONGO_URI: mongodb://root:root@db:27017
       ENV: dev
     entrypoint: ["poetry", "run", "python3", "-u", "main.py"]
     depends_on:

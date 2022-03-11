@@ -9,3 +9,4 @@ else:
 
 db = client.watersense
 sensor = db.sensor
+user = db.user
