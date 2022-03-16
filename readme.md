@@ -17,7 +17,7 @@ This runs all components as docker containers.
 
 1. Install [Docker](https://www.docker.com/products/docker-desktop).
 2. Install [Python Poetry](https://python-poetry.org/docs/#installation). This is to handle python envs.
-3. Run the command to start up all components. `$ docker compose -f development.yaml up`
+3. Run the command to start up all components. `$ docker compose up`
 4. You should see this on first start up. The ingestion-module relies on an exchange to be created. The sensor handles the creation of this exchange, the ingestion module only subscribes to the exchange. Since the exchange is not created yet, the ingestion-module will crash. ![docker compose result](./assets/DockerComposeResult.png "Docker compose result")
 5. Open a new terminal and navigate to the ingestion-module. `$ cd ingestion-module`
 6. Install the ingestion-module dependencies. `$ poetry install`
@@ -46,7 +46,7 @@ Running api-server locally.
 #### Via docker (If you prefer to develop while the code is running in the docker container)
 
 1. Start watersense-backend. [Refer to steps above](#running-watersense-backend-locally).
-2. Modify source code, the docker container will hot reload on code change. # Note: if new env variables or dependencies are added, the docker image will need to be rebuilt. Stop the docker compose, then `$ docker compose -f development down`, followed by deleting the `watersense-backend_api` image. Finally, re-run the docker compose.
+2. Modify source code, the docker container will hot reload on code change. # Note: if new env variables or dependencies are added, the docker image will need to be rebuilt. Stop the docker compose with `$ docker compose down`, followed by deleting the `watersense-backend_api` image. Finally, re-run the docker compose.
 
 #### Via source code (If you prefer to develop and run the code directly.)
 
