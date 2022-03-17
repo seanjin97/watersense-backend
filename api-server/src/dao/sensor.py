@@ -9,17 +9,26 @@ def get_all():
 
     return serialised_data
 
-# Sanity check
-def count_by_user_sensors():
+# Get total water usage for a user.
+def count_by_user_sensors(sensors):
     data = list(db.sensor.aggregate([
         {
-            "$match": {}
+            "$match": {"device_id": {
+                "$in": sensors
+                }
+            }
         },
         {
             "$group": {
-                "_id": "$device_id", 
-                "count": {"$sum": 1}
+                "_id": 1, 
+                "water_usage": {"$sum": "$sessionUsage"}
                 }
+        },
+        {
+            "$project": {
+                "_id": 0,
+                "water_usage": "$water_usage"
+            }
         }
     ]))
     return utils.parse_json(data)

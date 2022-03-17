@@ -6,6 +6,7 @@ import dao.sensor as sensor_db
 import dao.user as user_db
 from fastapi.responses import JSONResponse
 import datetime 
+import itertools
 
 app = FastAPI(docs_url="/swagger")
 
@@ -30,8 +31,12 @@ async def root():
 
 @app.get("/sanitycheck")
 def sanity_check():
-    data = sensor_db.count_by_user_sensors()
-    return JSONResponse(content=data, status_code=200)
+    users = user_db.get_all()
+    results = {}
+    for user in users:
+        data = sensor_db.count_by_user_sensors(user["sensors"])
+        results[user["username"]] = data[0]["water_usage"]
+    return JSONResponse(content=results, status_code=200)
 
 # Retrieve data organised by sensor category for pie chart and data organised by day/ month/ year for bar chart.
 @app.get("/analytics/user/{username}")
@@ -67,6 +72,30 @@ async def retrieve_user_and_current_trends(username: str):
     }
 
     return JSONResponse(status_code=200, content=consolidated_data)
+
+
+@app.get("/leaderboard/{username}")
+def list_leaderboard_standings(username: str):
+    if not user_db.get_user(username):
+        return JSONResponse(content="user not found", status_code=400)
+    users = user_db.get_all()
+
+    results = {}
+    for user in users:
+        data = sensor_db.count_by_user_sensors(user["sensors"])
+        results[user["username"]] = data[0]["water_usage"]
+    sorted_results = dict(sorted(results.items(), key=lambda item: item[1]))
+    user_standing = list(sorted_results.keys()).index(username)
+
+    response = {
+        "leaderboard": dict(itertools.islice(sorted_results.items(), 3)),
+        "standing": {
+            "username": username,
+            "usage": sorted_results[list(sorted_results.keys())[user_standing]],
+            "position": user_standing + 1
+        }
+    }
+    return JSONResponse(content=response, status_code=200)
 
 if __name__ == "__main__":
     print("Service started!")
