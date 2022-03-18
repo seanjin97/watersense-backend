@@ -2,6 +2,9 @@ import config.db as db
 import dao.utils as utils
 import datetime
 import calendar
+import pytz
+
+tz_info = pytz.timezone('Asia/Singapore')
 
 def get_all():
     data = list(db.sensor.find({}))
@@ -9,7 +12,7 @@ def get_all():
 
     return serialised_data
 
-# Get total water usage for a user.
+# Get total water usage for a user
 def count_by_user_sensors(sensors):
     data = list(db.sensor.aggregate([
         {
@@ -41,14 +44,14 @@ def get_aggregated_data_by_sensor(sensors, day=False, week=False, month=None, ye
     # Month data for a specific month and year.
     if not(month == None and year == None):
         # Get first and last days of provided year and month
-        start = datetime.datetime.today().replace(year=year, month=month, day=1, hour=0, minute=0, second=0, microsecond=0)
+        start = datetime.datetime.now(tz_info).replace(year=year, month=month, day=1, hour=0, minute=0, second=0, microsecond=0)
         last_day = calendar.monthrange(start.year, start.month)[1]
-        end = datetime.datetime.today().replace(day=last_day, hour=23, minute=59, second=59, microsecond=999999)
+        end = datetime.datetime.now(tz_info).replace(day=last_day, hour=23, minute=59, second=59, microsecond=999999)
     
     # Current day.
     elif day:
-        start = datetime.datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)
-        end = datetime.datetime.today().replace(hour=23, minute=59, second=59, microsecond=999999)
+        start = datetime.datetime.now(tz_info).replace(hour=0, minute=0, second=0, microsecond=0)
+        end = datetime.datetime.now(tz_info).replace(hour=23, minute=59, second=59, microsecond=999999)
     # Current week.
     elif week: 
         current_week = utils.get_current_week_dates()
@@ -57,9 +60,9 @@ def get_aggregated_data_by_sensor(sensors, day=False, week=False, month=None, ye
     # Current month.
     elif not (month and year):
         # If month and year arguments not given, assume current month and year.
-        start = datetime.datetime.today().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        start = datetime.datetime.now(tz_info).replace(day=1, hour=0, minute=0, second=0, microsecond=0)
         last_day = calendar.monthrange(start.year, start.month)[1]
-        end = datetime.datetime.today().replace(day=last_day, hour=23, minute=59, second=59, microsecond=999999)
+        end = datetime.datetime.now(tz_info).replace(day=last_day, hour=23, minute=59, second=59, microsecond=999999)
 
     # Aggregation
     data = list(db.sensor.aggregate([
@@ -99,8 +102,8 @@ def get_aggregated_data_by_sensor(sensors, day=False, week=False, month=None, ye
 # Aggregates data by hours in current day.
 def get_aggregated_data_by_hours_in_day(sensors):
 
-    start = datetime.datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)
-    end = datetime.datetime.today().replace(hour=23, minute=59, second=59, microsecond=999999)
+    start = datetime.datetime.now(tz_info).replace(hour=0, minute=0, second=0, microsecond=0)
+    end = datetime.datetime.now(tz_info).replace(hour=23, minute=59, second=59, microsecond=999999)
 
     # Aggregation
     data = list(db.sensor.aggregate([
@@ -114,7 +117,7 @@ def get_aggregated_data_by_hours_in_day(sensors):
         },
         {
         "$addFields": {
-            "startTime": { "$dateToParts": { "date": { "$toDate": { "$toLong": "$startTime" } } } }
+            "startTime": { "$dateToParts": { "date": { "$toDate": { "$toLong": "$startTime" } }, "timezone": "Asia/Singapore" } }
             }
         },
         {
@@ -135,7 +138,7 @@ def get_aggregated_data_by_hours_in_day(sensors):
                 "average_usage": {"$round": ["$average_usage", 2]},
                 "average_duration": {"$round": ["$average_duration", 2]},
                 "count": "$count",
-                "hour": "$_id"
+                "hour": "$_id.hour"
             }
         },
         {
@@ -163,7 +166,7 @@ def get_aggregated_data_by_days_in_week(sensors):
         },
         {
         "$addFields": {
-            "startTime": { "$dateToParts": { "date": { "$toDate": { "$toLong": "$startTime" } } } }
+            "startTime": { "$dateToParts": { "date": { "$toDate": { "$toLong": "$startTime" } }, "timezone": "Asia/Singapore" } }
             }
         },
         {
@@ -195,60 +198,9 @@ def get_aggregated_data_by_days_in_week(sensors):
     ]))
     return utils.parse_json(data)
 
-
-# Aggregates data by days in a week.
-def get_aggregated_data_by_days_in_week(sensors):
-
-    current_week = utils.get_current_week_dates()
-    start = current_week[0].replace(hour=0, minute=0, second=0, microsecond=0)
-    end = current_week[-1].replace(hour=23, minute=59, second=59, microsecond=999999)
-
-    # Aggregation
-    data = list(db.sensor.aggregate([
-        {
-            "$match": {
-                "device_id": {
-                    "$in": sensors
-                },
-                "startTime": { "$gte": start, "$lte": end}
-            }
-        },
-        {
-        "$addFields": {
-            "startTime": { "$dateToParts": { "date": { "$toDate": { "$toLong": "$startTime" } } } }
-            }
-        },
-        {
-            "$group": {
-                "_id": { 
-                    "day": "$startTime.day",
-                    "month": "$startTime.month",
-                    "year": "$startTime.year"
-                }, 
-                "total_usage": {"$sum": "$sessionUsage"}, 
-                "average_usage": {"$avg": "$sessionUsage"}, 
-                "average_duration": {"$avg": "$sessionDuration"},
-                "count": {"$sum": 1}
-                }
-        },
-        {
-            "$project": {
-                "_id": 0,
-                "total_usage": {"$round": ["$total_usage", 2]},
-                "average_usage": {"$round": ["$average_usage", 2]},
-                "average_duration": {"$round": ["$average_duration", 2]},
-                "count": "$count",
-                "date": { "$concat": [ { "$toString": "$_id.day" }, "/", { "$toString": "$_id.month" }, "/", {"$toString": "$_id.year"} ] }
-            }
-        },
-        {
-            "$sort": {"date": 1}
-        }
-    ]))
-    return utils.parse_json(data)
 
 def get_aggregated_data_by_last_6_months(sensors):
-    end = datetime.datetime.today()
+    end = datetime.datetime.now(tz_info)
     start = (end - datetime.timedelta(6 * 30)).replace(day=1, hour=0, minute=0, second=0, microsecond=0)
 
     # Aggregation
@@ -263,8 +215,8 @@ def get_aggregated_data_by_last_6_months(sensors):
         },
         {
         "$addFields": {
-            "startTime": { "$dateToParts": { "date": { "$toDate": { "$toLong": "$startTime" } } } }
-            }
+            "startTime": { "$dateToParts": { "date": { "$toDate": { "$toLong": "$startTime" } }, "timezone": "Asia/Singapore" } }
+            },
         },
         {
             "$group": {
@@ -296,5 +248,113 @@ def get_aggregated_data_by_last_6_months(sensors):
                 "date": { "$concat": [{ "$toString": "$_id.month" }, "/", {"$toString": "$_id.year"} ] }
             }
         },
+    ]))
+    return utils.parse_json(data)
+
+# Get total water usage in current month for a user.
+def month_water_usage_by_user_sensors(sensors):
+
+    start = datetime.datetime.now(tz_info).replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    last_day = calendar.monthrange(start.year, start.month)[1]
+    end = datetime.datetime.now(tz_info).replace(day=last_day, hour=23, minute=59, second=59, microsecond=999999)
+
+    data = list(db.sensor.aggregate([
+        {
+            "$match": {"device_id": {
+                "$in": sensors
+                },
+                "startTime": { "$gte": start, "$lte": end}
+            }
+        },
+        {
+            "$group": {
+                "_id": 1, 
+                "water_usage": {"$sum": "$sessionUsage"}
+                }
+        },
+        {
+            "$project": {
+                "_id": 0,
+                "water_usage": "$water_usage"
+            }
+        }
+    ]))
+    return utils.parse_json(data)
+
+# Get total water usage in current day for a user.
+def day_water_usage_by_user_sensors(sensors):
+
+    start = datetime.datetime.now(tz_info).replace(hour=0, minute=0, second=0, microsecond=0)
+    end = datetime.datetime.now(tz_info).replace(hour=23, minute=59, second=59, microsecond=999999)
+
+    data = list(db.sensor.aggregate([
+        {
+            "$match": {"device_id": {
+                "$in": sensors
+                },
+                "startTime": { "$gte": start, "$lte": end}
+            }
+        },
+        {
+            "$group": {
+                "_id": 1, 
+                "water_usage": {"$sum": "$sessionUsage"}
+                }
+        },
+        {
+            "$project": {
+                "_id": 0,
+                "water_usage": "$water_usage"
+            }
+        }
+    ]))
+    return utils.parse_json(data)
+
+# Aggregates data by days in a month.
+def get_aggregated_data_by_days_in_month(sensors):
+
+    start = datetime.datetime.now(tz_info).replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    last_day = calendar.monthrange(start.year, start.month)[1]
+    end = datetime.datetime.now(tz_info).replace(day=last_day, hour=23, minute=59, second=59, microsecond=999999)
+
+    # Aggregation
+    data = list(db.sensor.aggregate([
+        {
+            "$match": {
+                "device_id": {
+                    "$in": sensors
+                },
+                "startTime": { "$gte": start, "$lte": end}
+            }
+        },
+        {
+        "$addFields": {
+            "tempDate": { "$dateToParts": { "date": { "$toDate": { "$toLong": "$startTime" } }, "timezone": "Asia/Singapore" } }
+            }
+        },
+        {
+            "$group": {
+                "_id": { 
+                    "day": "$tempDate.day",
+                    "month": "$tempDate.month",
+                    "year": "$tempDate.year"
+                }, 
+                "total_usage": {"$sum": "$sessionUsage"}, 
+                "average_usage": {"$avg": "$sessionUsage"}, 
+                "average_duration": {"$avg": "$sessionDuration"},
+                "count": {"$sum": 1}
+                }
+        },
+        {
+            "$project": {
+                "_id": 0,
+                "total_usage": {"$round": ["$total_usage", 2]},
+                "average_usage": {"$round": ["$average_usage", 2]},
+                "average_duration": {"$round": ["$average_duration", 2]},
+                "count": "$count",
+                "date_string": { "$concat": [ { "$toString": "$_id.day" }, "/", { "$toString": "$_id.month" }, "/", {"$toString": "$_id.year"} ] },
+                "date_parts": "$_id"
+            }
+        }
     ]))
     return utils.parse_json(data)

@@ -13,3 +13,7 @@ def get_user(username):
 
 def create_user(user):
     return db.user.insert_one(user)
+
+def update_user(username, updated_fields):
+    result = db.user.update_one({"username": username}, {"$set": updated_fields})
+    return {"matched": result.matched_count, "modified": result.modified_count}

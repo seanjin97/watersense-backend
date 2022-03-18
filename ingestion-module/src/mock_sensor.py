@@ -7,6 +7,9 @@ import os
 import datetime
 import uuid
 from pymongo import MongoClient
+import pytz
+
+tz_info = pytz.timezone('Asia/Singapore')
 
 # Load config variables
 load_dotenv()
@@ -38,7 +41,11 @@ sensor6_id = None
 if sensor6_id:
     example_user = {
         'username': 'test1',
-        'sensors': [sensor1_id, sensor2_id, sensor3_id, sensor4_id, sensor5_id, sensor6_id]
+        'sensors': [sensor1_id, sensor2_id, sensor3_id, sensor4_id, sensor5_id, sensor6_id],
+        "goals": {
+            "daily": 130000,
+            "monthly": 390000
+        }
     }
     SENSORS = [
     {"device": "Kitchen", "device_id": sensor1_id}, 
@@ -52,14 +59,18 @@ if sensor6_id:
 else:
     example_user = {
         'username': 'test5',
-        'sensors': [sensor1_id, sensor2_id, sensor3_id, sensor4_id, sensor5_id]
+        'sensors': [sensor1_id, sensor2_id, sensor3_id, sensor4_id, sensor5_id],
+        "goals": {
+            "daily": 130000,
+            "monthly": 390000
+        }
     }
     SENSORS = [
     {"device": "Kitchen", "device_id": sensor1_id}, 
     {"device": "Shower1", "device_id": sensor2_id}, 
     {"device": "Shower2", "device_id": sensor3_id}, 
     {"device": "Toilet1", "device_id": sensor4_id}, 
-    {"device": "Toilet2", "device_id": sensor5_id}
+    {"device": "Toilet2", "device_id": sensor5_id},
     ]
 
 db.user.insert_one(example_user)
@@ -75,7 +86,7 @@ while True:
 
     random_duration = random.uniform(1, 10)
     interval =  datetime.timedelta(seconds=random_duration)
-    time_start = datetime.datetime.now().replace(month=month, day=day, hour=hour, minute=minute, second=0, microsecond=0)
+    time_start = datetime.datetime.now(tz_info).replace(day=day, month=month, hour=hour, minute=minute)
     time_end = time_start + interval
 
     random_sensor = random.choice(SENSORS)
@@ -97,6 +108,6 @@ while True:
         routing_key='watersense', 
         body=str(randomised_data)
     )
-    # time.sleep(random_duration)
+# time.sleep(random_duration)
 
 connection.close()
