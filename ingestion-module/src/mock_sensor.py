@@ -1,3 +1,4 @@
+import sys
 import pika
 import time 
 import random
@@ -8,6 +9,7 @@ import datetime
 import uuid
 from pymongo import MongoClient
 import pytz
+import sys
 
 tz_info = pytz.timezone('Asia/Singapore')
 
@@ -33,45 +35,28 @@ sensor2_id = str(uuid.uuid4())
 sensor3_id = str(uuid.uuid4())
 sensor4_id = str(uuid.uuid4())
 sensor5_id = str(uuid.uuid4())
-sensor6_id = None
 
-# Uncomment this line for test1
-# sensor6_id = "be6aa32f-71dd-4c82-b84d-8ed6ea3d9f7d"
-
-if sensor6_id:
-    example_user = {
-        'username': 'test1',
-        'sensors': [sensor1_id, sensor2_id, sensor3_id, sensor4_id, sensor5_id, sensor6_id],
-        "goals": {
-            "daily": 130000,
-            "monthly": 390000
-        }
-    }
-    SENSORS = [
-    {"device": "Kitchen", "device_id": sensor1_id}, 
-    {"device": "Shower1", "device_id": sensor2_id}, 
-    {"device": "Shower2", "device_id": sensor3_id}, 
-    {"device": "Toilet1", "device_id": sensor4_id}, 
-    {"device": "Toilet2", "device_id": sensor5_id},
-    {"device": "Sink", "device_id": sensor6_id},
-    ]
-
+if (sys.argv[1] == "test1"):
+    sensor6_id = "be6aa32f-71dd-4c82-b84d-8ed6ea3d9f7d"
 else:
-    example_user = {
-        'username': 'test5',
-        'sensors': [sensor1_id, sensor2_id, sensor3_id, sensor4_id, sensor5_id],
-        "goals": {
-            "daily": 130000,
-            "monthly": 390000
-        }
+    sensor6_id = str(uuid.uuid4())
+
+example_user = {
+    'username': sys.argv[1],
+    'sensors': [sensor1_id, sensor2_id, sensor3_id, sensor4_id, sensor5_id, sensor6_id],
+    "goals": {
+        "daily": 130000,
+        "monthly": 390000
     }
-    SENSORS = [
-    {"device": "Kitchen", "device_id": sensor1_id}, 
-    {"device": "Shower1", "device_id": sensor2_id}, 
-    {"device": "Shower2", "device_id": sensor3_id}, 
-    {"device": "Toilet1", "device_id": sensor4_id}, 
-    {"device": "Toilet2", "device_id": sensor5_id},
-    ]
+}
+SENSORS = [
+{"device": "Kitchen_1", "device_id": sensor1_id}, 
+{"device": "Shower_1", "device_id": sensor2_id}, 
+{"device": "Shower_2", "device_id": sensor3_id}, 
+{"device": "Toilet_1", "device_id": sensor4_id}, 
+{"device": "Toilet_2", "device_id": sensor5_id},
+{"device": "Sink_1", "device_id": sensor6_id},
+]
 
 db.user.insert_one(example_user)
 

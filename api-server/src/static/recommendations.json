@@ -1,0 +1,6 @@
+{
+    "Sink": ["Do not leave the tap running while brushing teeth and washing your hands.", "Turn off taps tightly to ensure they do not drip.", "Do not leave the tap running when not in use."],
+    "Kitchen": ["Ensure tap is off when soaping.", "Rinse vegetables in a container instead of under a running tap.", "Wash dishes in a sink or container filled with water.", "Do not thaw food under running water.", "Do not leave the tap running when not in use."],
+    "Toilet": ["Always use half-flush when possible."],
+    "Shower": ["Turn off the shower when soaping.", "Take a shower of 5 minutes or less."]
+}
