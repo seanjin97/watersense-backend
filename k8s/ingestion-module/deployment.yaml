@@ -13,7 +13,7 @@ spec:
         app: watersense-ingestion
     spec:
       containers:
-      - name: watersense-api
+      - name: watersense-ingestion
         image: ghcr.io/seanjin97/watersense-ingestion:latest
         resources:
           limits:
