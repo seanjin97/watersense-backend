@@ -180,6 +180,7 @@ def get_personalised_reccomendations(username: str):
         user_total_water_usage_in_prev_month += item["total_usage"]
 
     goal_recommendations = {}
+    results["monthly_goal_comparison"] = {}
     if user_total_water_usage_in_prev_month > user["goals"]["monthly"]:
         # Read in statistics list.
         # Derived from https://www.singsaver.com.sg/blog/7-practical-ways-you-can-save-water-at-home by calculating % of water usage of average litres of water used per month
@@ -189,13 +190,13 @@ def get_personalised_reccomendations(username: str):
         goal_recommendations = {}
         for category in goal_reccomendation_list:
             goal_recommendations[category] = random.choice(recommendations[category])
+        
+        results["monthly_goal_comparison"]["national_monthly_statistics"] = statistics
+        results["monthly_goal_comparison"]["statistics_recommendations"] = goal_recommendations
 
     # Create response object.
     results["username"] = user
     results["user_usage"] = user_dict
-    results["monthly_goal_comparison"] = {}
-    results["monthly_goal_comparison"]["national_monthly_statistics"] = statistics
-    results["monthly_goal_comparison"]["statistics_recommendations"] = goal_recommendations
     results["peer_comparison"] = {}
     results["peer_comparison"]["peers"] = peer_dict
     results["peer_comparison"]["peer_recommendations"] = peer_recommendations
