@@ -45,6 +45,7 @@ async def retrieve_user_and_current_trends(username: str):
     # Retrieve sensor data by daily, weekly, monthly breakdowns.
     aggregated_sensor_readings_by_hours_in_day = sensor_db.get_aggregated_data_by_hours_in_day(user["sensors"])
     aggregated_sensor_readings_by_days_in_week = sensor_db.get_aggregated_data_by_days_in_week(user["sensors"])
+    aggregated_sensor_readings_by_days_in_week = sorted(aggregated_sensor_readings_by_days_in_week, key=lambda d: d["date_parts"]["day"]) 
     aggregated_sensor_readings_by_last_6_months = sensor_db.get_aggregated_data_by_last_6_months(user["sensors"])
 
     consolidated_data = {**user, 
@@ -134,7 +135,7 @@ def get_monthly_overview(username: str):
     result["num_days_in_prev_month"] = num_days_in_prev_month
     result["data"] = sorted(daily_usage_in_prev_month, key=lambda d: d["date_parts"]["day"]) 
 
-    return JSONResponse(content=result, status_code=200)
+    return JSONResponse(content={**user, **result}, status_code=200)
 
 @app.get("/recommendations/{username}", tags=["recommendations"])
 def get_personalised_reccomendations(username: str):

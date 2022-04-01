@@ -160,11 +160,12 @@ def get_aggregated_data_by_days_in_week(sensors):
                 "average_usage": {"$round": ["$average_usage", 2]},
                 "average_duration": {"$round": ["$average_duration", 2]},
                 "count": "$count",
-                "date": { "$concat": [ { "$toString": "$_id.day" }, "/", { "$toString": "$_id.month" }, "/", {"$toString": "$_id.year"} ] }
+                "date": { "$concat": [ { "$toString": "$_id.day" }, "/", { "$toString": "$_id.month" }, "/", {"$toString": "$_id.year"} ] },
+                "date_parts": "$_id"
             }
         },
         {
-            "$sort": {"date": 1}
+            "$sort": {"_id.day": 1}
         }
     ]))
     return utils.parse_json(data)
