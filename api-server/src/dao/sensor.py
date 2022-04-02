@@ -163,9 +163,6 @@ def get_aggregated_data_by_days_in_week(sensors):
                 "date": { "$concat": [ { "$toString": "$_id.day" }, "/", { "$toString": "$_id.month" }, "/", {"$toString": "$_id.year"} ] },
                 "date_parts": "$_id"
             }
-        },
-        {
-            "$sort": {"_id.day": 1}
         }
     ]))
     return utils.parse_json(data)

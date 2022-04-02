@@ -45,7 +45,7 @@ async def retrieve_user_and_current_trends(username: str):
     # Retrieve sensor data by daily, weekly, monthly breakdowns.
     aggregated_sensor_readings_by_hours_in_day = sensor_db.get_aggregated_data_by_hours_in_day(user["sensors"])
     aggregated_sensor_readings_by_days_in_week = sensor_db.get_aggregated_data_by_days_in_week(user["sensors"])
-    aggregated_sensor_readings_by_days_in_week = sorted(aggregated_sensor_readings_by_days_in_week, key=lambda d: d["date_parts"]["day"]) 
+    aggregated_sensor_readings_by_days_in_week = sorted(aggregated_sensor_readings_by_days_in_week, key=lambda d: (d["date_parts"]["month"], d["date_parts"]["day"]) )
     aggregated_sensor_readings_by_last_6_months = sensor_db.get_aggregated_data_by_last_6_months(user["sensors"])
 
     consolidated_data = {**user, 
